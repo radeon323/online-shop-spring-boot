@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <#include "/html_parts/head_part.html">
+    <title>Shopping cart</title>
+</head>
+<body>
+<#include "/html_parts/header.html">
+</br>
+<h1 align="center">Shopping cart</h1>
+</br>
+
+<div class="container ">
+
+    <table class="table table-striped align-middle ">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Sum</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <#list cartItems as cartItem>
+        <form action="/cart/update" method="POST">
+                    <tr >
+                        <th scope="row">${cartItem.product.id}</th>
+                        <td>${cartItem.product.name}</td>
+                        <td>${cartItem.product.price?string["0.00"]}</td>
+                        <td>
+                            <input type="number" step="1" min="1" name="quantity" placeholder="${cartItem.quantity}" >
+                        </td>
+                        <td>
+                            <#assign price=cartItem.product.price quantity=cartItem.quantity>
+
+                            <#function sum price quantity>
+                            <#return (price * quantity)>
+                            </#function>
+
+                            ${sum(price, quantity)?string["0.00"]}
+                        </td>
+                        <td>
+                            <a href='/cart/delete?id=${cartItem.product.id}' type="button" class="btn btn-outline-dark">Delete</a>
+                            <input type="hidden" value="${cartItem.product.id}" name="id">
+                            <button class="btn btn-outline-dark" type="submit">Update</button>
+                        </td>
+                    </tr>
+        </form>
+        </#list>
+        <tr >
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Total price:</th>
+            <th>${totalPrice?string["0.00"]}</th>
+            <th></th>
+
+        </tr>
+        </tbody>
+    </table>
+
+    <div align="center">
+        </br>
+        <a href='/products' type="button" class="btn btn-outline-dark">back to products list -></a>
+        <a href="/cart" type="button" class="btn btn-outline-dark" >Purchase</a>
+    </div>
+
+    <#include "/html_parts/success_to_products_list.html">
+</div>
+<#include "/html_parts/footer_script.html">
+
+</body>
+</html>

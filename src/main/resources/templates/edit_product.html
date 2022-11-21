@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <#include "/html_parts/head_part.html">
+    <title>Edit Product</title>
+</head>
+
+<body>
+<#include "/html_parts/header.html">
+<div class="container">
+
+    <div class="container pt-3">
+        <h1 align="center">Edit Product</h1>
+    </div>
+
+    <form action="/products/edit" method="POST">
+
+        <input type="hidden" value="${product.id}" name="id" />
+
+        <div class="container pt-3 pb-3">
+            <div class="row justify-content-center align-items-center pt-3 pb-3">
+                <div class="col col-md-2">
+                    <span class="align-middle">Product name:  ${product.name}</span>
+                </div>
+
+                <div class="col col-md-3">
+                    <input type="text" name="name" class="form-control" value="${product.name}">
+                </div>
+            </div>
+
+            <div class="row justify-content-center align-items-center pt-3 pb-3">
+                <div class="col col-md-2">
+                    <span class="align-middle">Product price:  ${product.price?string.computer}</span>
+                </div>
+                <div class="col col-md-3">
+                    <input type="number" step="0.01" min="0.01" name="price" class="form-control" value="${product.price?string.computer}">
+                </div>
+            </div>
+
+            <div class="row justify-content-center align-items-center pt-3 pb-3">
+                <div class="col col-md-2">
+                    <span class="align-middle">Product description:</span>
+                </div>
+
+                <div class="col col-md-3">
+                    <textarea name="description" class="form-control" aria-label="description:">${product.description}</textarea>
+                </div>
+            </div>
+
+            <div class="row justify-content-center align-items-center pt-3 pb-3">
+                <div class="col col-md-auto">
+                    <button class="btn btn-outline-dark" type="submit">Edit product</button>
+                </div>
+            </div>
+
+        </div>
+        <#include "/html_parts/success_to_products_list.html">
+    </form>
+
+</div>
+<#include "/html_parts/footer_script.html">
+</body>
+</html>
+
+
