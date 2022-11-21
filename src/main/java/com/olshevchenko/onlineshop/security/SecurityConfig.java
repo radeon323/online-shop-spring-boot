@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .usernameParameter("email")
                 .and()
                 .rememberMe()
-                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(1))
+                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(10))
                     .key("0212ce79-369e-477f-b633-c12446c51c75")
                     .rememberMeParameter("remember-me")
                 .and()
@@ -75,7 +75,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(daoAuthenticationProvider());
     }
 
-    @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder);
