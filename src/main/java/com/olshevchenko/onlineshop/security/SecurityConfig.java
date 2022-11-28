@@ -1,16 +1,15 @@
 package com.olshevchenko.onlineshop.security;
 
 import com.olshevchenko.onlineshop.service.UserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,8 +20,8 @@ import static com.olshevchenko.onlineshop.security.entity.UserPermission.*;
  */
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@RequiredArgsConstructor
+public class SecurityConfig {
 
     public static final String LOGIN_URI = "/login";
     public static final String LOGOUT_URI = "/logout";
@@ -30,13 +29,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "index", "/css/*", "/js/*",
-                         "/register", "/register/", "/products", "/products/").permitAll()
+                        "/register", "/register/", "/products", "/products/").permitAll()
 
                 .antMatchers("/cart", "/cart/", "/cart/delete").hasAuthority(PRODUCT_READ.getPermission())
                 .antMatchers(HttpMethod.POST,"/cart/update").hasAuthority(PRODUCT_READ.getPermission())
@@ -57,22 +56,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .passwordParameter("password")
                     .usernameParameter("email")
                 .and()
-                .rememberMe()
+                    .rememberMe()
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(10))
                     .key("0212ce79-369e-477f-b633-c12446c51c75")
                     .rememberMeParameter("remember-me")
                 .and()
-                .logout()
+                    .logout()
                     .logoutUrl(LOGOUT_URI).permitAll()
                     .clearAuthentication(true)
                     .invalidateHttpSession(true)
                     .deleteCookies("SESSION", "remember-me")
                     .logoutSuccessUrl(LOGIN_URI);
-    }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(daoAuthenticationProvider());
+        http.authenticationProvider(daoAuthenticationProvider());
+
+        return http.build();
     }
 
     public DaoAuthenticationProvider daoAuthenticationProvider() {
@@ -81,4 +79,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         provider.setUserDetailsService(userService);
         return provider;
     }
+
 }

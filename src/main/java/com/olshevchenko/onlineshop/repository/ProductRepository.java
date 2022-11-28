@@ -1,17 +1,12 @@
 package com.olshevchenko.onlineshop.repository;
 
 import com.olshevchenko.onlineshop.entity.Product;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author Oleksandr Shevchenko
  */
-public interface ProductRepository {
-    List<Product> findAll();
-    Optional<Product> findById(int id);
-    void add(Product product);
-    void remove(int id);
-    void update(Product product);
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Integer> {
 }

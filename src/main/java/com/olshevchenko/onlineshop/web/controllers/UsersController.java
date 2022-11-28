@@ -1,9 +1,9 @@
-package com.olshevchenko.onlineshop.web;
+package com.olshevchenko.onlineshop.web.controllers;
 
 import com.olshevchenko.onlineshop.entity.Gender;
 import com.olshevchenko.onlineshop.entity.User;
-import com.olshevchenko.onlineshop.service.UserService;
 import com.olshevchenko.onlineshop.security.entity.Role;
+import com.olshevchenko.onlineshop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
@@ -55,7 +55,7 @@ public class UsersController {
             return "register";
         }
 
-        if (userService.findByEmail(email).isPresent()) {
+        if (userService.findByEmail(email) != null ) {
             String errorMsg = "This user is already exist! <a href='/login'> Login page</a>";
             model.addAttribute("errorMsg", errorMsg);
             return "register";
@@ -72,7 +72,7 @@ public class UsersController {
                     .build());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                userService.add(user);
+                userService.save(user);
                 String msgSuccess = String.format("User <i>%s</i> was successfully registered!", email);
                 model.addAttribute("msgSuccess", msgSuccess);
             }
@@ -107,7 +107,7 @@ public class UsersController {
         Role role = oldUser.getRole();
         Gender gender = oldUser.getGender();
 
-        if (userService.findByEmail(email).isPresent()) {
+        if (userService.findByEmail(email) != null ) {
             User user = User.builder()
                     .id(id)
                     .email(email)
@@ -121,7 +121,8 @@ public class UsersController {
                     .build();
 
             if (Optional.ofNullable(user).isPresent()) {
-                userService.edit(user);
+                user.setId(id);
+                userService.save(user);
                 String msgSuccess = String.format("User <i>%s</i> was successfully changed!", user.getEmail());
                 model.addAttribute("msgSuccess", msgSuccess);
             }

@@ -1,4 +1,4 @@
-package com.olshevchenko.onlineshop.web;
+package com.olshevchenko.onlineshop.web.controllers;
 
 import com.olshevchenko.onlineshop.entity.Product;
 import com.olshevchenko.onlineshop.service.ProductService;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +46,7 @@ public class ProductsController {
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
             model.addAttribute("product", product);
-            productService.add(product);
+            productService.save(product);
             String msgSuccess = String.format("Product <i>%s</i> was successfully added!", product.getName());
             model.addAttribute("msgSuccess", msgSuccess);
         }
@@ -55,12 +54,9 @@ public class ProductsController {
     }
 
     @GetMapping("/edit")
-    protected String getEditProductPage(HttpServletRequest request,
-                              @RequestParam int id,
-                              ModelMap model) {
-        Optional<Product> optionalProduct = productService.findById(id);
-        optionalProduct.ifPresent(product -> model.addAttribute("product", product));
-
+    protected String getEditProductPage(@RequestParam int id, ModelMap model) {
+        Product product = productService.findById(id);
+        model.addAttribute("product", product);
         return "edit_product";
     }
 
@@ -76,7 +72,8 @@ public class ProductsController {
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
             model.addAttribute("product", product);
-            productService.edit(product);
+            product.setId(id);
+            productService.save(product);
             String msgSuccess = String.format("Product <i>%s</i> was successfully changed!", product.getName());
             model.addAttribute("msgSuccess", msgSuccess);
         }
@@ -85,7 +82,7 @@ public class ProductsController {
 
     @GetMapping("/delete")
     protected String deleteProduct(@RequestParam int id, ModelMap model) {
-        productService.remove(id);
+        productService.findById(id);
         String msgSuccess = String.format("Product with id:%d was successfully deleted!", id);
         model.addAttribute("msgSuccess", msgSuccess);
 

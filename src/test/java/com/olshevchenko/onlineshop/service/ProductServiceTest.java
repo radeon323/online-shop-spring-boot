@@ -1,7 +1,7 @@
 package com.olshevchenko.onlineshop.service;
 
-import com.olshevchenko.onlineshop.repository.ProductRepository;
 import com.olshevchenko.onlineshop.entity.Product;
+import com.olshevchenko.onlineshop.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,9 +83,8 @@ class ProductServiceTest {
         products.add(productXiaomi);
 
         when(productRepositoryMock.findById(1)).thenReturn(Optional.ofNullable(products.get(0)));
-        Optional<Product> actualProduct = productService.findById(1);
-        assertTrue(actualProduct.isPresent());
-        assertEquals(productSamsung, actualProduct.get());
+        Product actualProduct = productService.findById(1);
+        assertEquals(productSamsung, actualProduct);
         verify(productRepositoryMock, times(1)).findById(1);
     }
 
@@ -98,30 +97,16 @@ class ProductServiceTest {
                 .price(13499.0)
                 .creationDate(LocalDateTime.of(2022, 2,24, 4, 0, 0))
                 .build();
-        doNothing().when(productRepositoryMock).add(isA(Product.class));
-        productRepositoryMock.add(productSamsung);
-        verify(productRepositoryMock, times(1)).add(productSamsung);
+        doNothing().when(productRepositoryMock).save(isA(Product.class));
+        productRepositoryMock.save(productSamsung);
+        verify(productRepositoryMock, times(1)).save(productSamsung);
     }
 
     @Test
     void testRemove() {
-        doNothing().when(productRepositoryMock).remove(isA(Integer.class));
-        productRepositoryMock.remove(1);
-        verify(productRepositoryMock, times(1)).remove(1);
-    }
-
-    @Test
-    void testUpdate() {
-        Product productSamsung = Product.builder()
-                .id(1)
-                .name("Samsung Galaxy M52")
-                .description("6.7 inches, Qualcomm SM7325 Snapdragon 778G 5G")
-                .price(13499.0)
-                .creationDate(LocalDateTime.of(2022, 2,24, 4, 0, 0))
-                .build();
-        doNothing().when(productRepositoryMock).update(isA(Product.class));
-        productRepositoryMock.update(productSamsung);
-        verify(productRepositoryMock, times(1)).update(productSamsung);
+        doNothing().when(productRepositoryMock).deleteById(isA(Integer.class));
+        productRepositoryMock.deleteById(1);
+        verify(productRepositoryMock, times(1)).deleteById(1);
     }
 
 

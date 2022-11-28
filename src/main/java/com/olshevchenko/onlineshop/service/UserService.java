@@ -1,46 +1,50 @@
 package com.olshevchenko.onlineshop.service;
 
-import com.olshevchenko.onlineshop.repository.UserRepository;
 import com.olshevchenko.onlineshop.entity.User;
+import com.olshevchenko.onlineshop.exception.UserNotFoundException;
+import com.olshevchenko.onlineshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author Oleksandr Shevchenko
  */
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private final UserRepository jdbcUserRepository;
+    private final UserRepository repository;
 
-    public Optional<User> findById(int id) {
-        return jdbcUserRepository.findById(id);
+    public List<User> findAll() {
+        return repository.findAll();
     }
 
-    public Optional<User> findByEmail(String email) {
-        return jdbcUserRepository.findByEmail(email);
+    public User findById(int id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Could not find user by id: " + id));
     }
 
-    public void add(User user) {
-        jdbcUserRepository.add(user);
+    public User findByEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Could not find user by email: " + email));
     }
 
-    public void remove(int id) {
-        jdbcUserRepository.remove(id);
+    public void save(User user) {
+        repository.save(user);
     }
 
-    public void edit(User user) {
-        jdbcUserRepository.update(user);
+    public void delete(int id) {
+        repository.deleteById(id);
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found", email)));
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found", email)));
     }
 }

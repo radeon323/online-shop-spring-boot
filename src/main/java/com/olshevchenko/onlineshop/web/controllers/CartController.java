@@ -1,4 +1,4 @@
-package com.olshevchenko.onlineshop.web;
+package com.olshevchenko.onlineshop.web.controllers;
 
 import com.olshevchenko.onlineshop.entity.CartItem;
 import com.olshevchenko.onlineshop.entity.Product;

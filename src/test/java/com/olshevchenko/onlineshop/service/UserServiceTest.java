@@ -1,8 +1,8 @@
 package com.olshevchenko.onlineshop.service;
 
-import com.olshevchenko.onlineshop.repository.UserRepository;
 import com.olshevchenko.onlineshop.entity.Gender;
 import com.olshevchenko.onlineshop.entity.User;
+import com.olshevchenko.onlineshop.repository.UserRepository;
 import com.olshevchenko.onlineshop.security.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,8 +48,7 @@ class UserServiceTest {
     @Test
     void testFindById() {
         when(userRepositoryMock.findById(1)).thenReturn(Optional.ofNullable(expectedUser));
-        Optional<User> optionalUser = userService.findById(1);
-        User actualUser = optionalUser.get();
+        User actualUser = userService.findById(1);
         assertEquals(expectedUser, actualUser);
         verify(userRepositoryMock, times(1)).findById(1);
     }
@@ -57,31 +56,23 @@ class UserServiceTest {
     @Test
     void testFindByEmail() {
         when(userRepositoryMock.findByEmail("darthvader@gmail.com")).thenReturn(Optional.ofNullable(expectedUser));
-        Optional<User> optionalUser = userService.findByEmail("darthvader@gmail.com");
-        User actualUser = optionalUser.get();
+        User actualUser = userService.findByEmail("darthvader@gmail.com");
         assertEquals(expectedUser, actualUser);
         verify(userRepositoryMock, times(1)).findByEmail("darthvader@gmail.com");
     }
 
     @Test
     void testAdd() {
-        doNothing().when(userRepositoryMock).add(isA(User.class));
-        userRepositoryMock.add(expectedUser);
-        verify(userRepositoryMock, times(1)).add(expectedUser);
+        doNothing().when(userRepositoryMock).save(isA(User.class));
+        userRepositoryMock.save(expectedUser);
+        verify(userRepositoryMock, times(1)).save(expectedUser);
     }
 
     @Test
     void testRemove() {
-        doNothing().when(userRepositoryMock).remove(isA(Integer.class));
-        userRepositoryMock.remove(1);
-        verify(userRepositoryMock, times(1)).remove(1);
-    }
-
-    @Test
-    void testEdit() {
-        doNothing().when(userRepositoryMock).update(isA(User.class));
-        userRepositoryMock.update(expectedUser);
-        verify(userRepositoryMock, times(1)).update(expectedUser);
+        doNothing().when(userRepositoryMock).deleteById(isA(Integer.class));
+        userRepositoryMock.deleteById(1);
+        verify(userRepositoryMock, times(1)).deleteById(1);
     }
 
 

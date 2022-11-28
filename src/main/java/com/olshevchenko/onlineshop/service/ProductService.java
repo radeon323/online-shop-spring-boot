@@ -1,41 +1,46 @@
 package com.olshevchenko.onlineshop.service;
 
-import com.olshevchenko.onlineshop.repository.ProductRepository;
 import com.olshevchenko.onlineshop.entity.Product;
-import lombok.*;
+import com.olshevchenko.onlineshop.exception.ProductNotFoundException;
+import com.olshevchenko.onlineshop.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Oleksandr Shevchenko
  */
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductRepository jdbcProductRepository;
+    private final ProductRepository repository;
 
     public List<Product> findAll() {
-        return jdbcProductRepository.findAll();
+        return repository.findAll();
     }
 
-    public Optional<Product> findById(int id) {
-        return jdbcProductRepository.findById(id);
+    public Product findById(int id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Could not find product by id: " + id));
     }
 
-    public void add(Product product) {
+    public void delete(int id) {
+        repository.deleteById(id);
+    }
+
+    public void save(Product product) {
         product.setCreationDate(LocalDateTime.now().withNano(0).withSecond(0));
-        jdbcProductRepository.add(product);
+        repository.save(product);
     }
 
-    public void remove(int id) {
-        jdbcProductRepository.remove(id);
+    public List<Product> sortByPrice() {
+        return repository.findAll();
     }
 
-    public void edit(Product product) {
-        jdbcProductRepository.update(product);
+    public List<Product> sortByName() {
+        return repository.findAll();
     }
 }

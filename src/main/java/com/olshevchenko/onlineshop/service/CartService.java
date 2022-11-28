@@ -6,7 +6,6 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Oleksandr Shevchenko
@@ -18,13 +17,13 @@ public class CartService {
     private final ProductService productService;
 
     public void addToCart(List<CartItem> cart, int id) {
-        Optional<Product> product = productService.findById(id);
+        Product product = productService.findById(id);
         cart.stream()
                 .filter(item -> item.getProduct().getId() == id)
                 .findFirst()
                 .ifPresentOrElse(
                         item -> item.setQuantity(item.getQuantity() + 1),
-                        () -> cart.add(new CartItem(product.get(), 1)));
+                        () -> cart.add(new CartItem(product, 1)));
     }
 
     public void removeFromCart(List<CartItem> cart, int id) {
