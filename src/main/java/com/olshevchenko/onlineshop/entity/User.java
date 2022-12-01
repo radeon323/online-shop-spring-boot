@@ -1,11 +1,14 @@
 package com.olshevchenko.onlineshop.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.olshevchenko.onlineshop.entity.utils.CustomAuthorityDeserializer;
 import com.olshevchenko.onlineshop.security.entity.Role;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
@@ -21,7 +24,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Table( name = "users" )
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_gen")
@@ -36,7 +39,9 @@ public class User implements UserDetails {
 
     //TODO: solve org.postgresql.util.PSQLException:
     // ERROR: column "gender" is of type gender but expression is of type character varying
-    @Column(name = "gender")
+//    @Convert(converter = GenderConverter.class)
+//    @Type(type = "com.olshevchenko.onlineshop.entity.Gender")
+    @Column(name = "gender", columnDefinition = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -59,6 +64,7 @@ public class User implements UserDetails {
     private Role role;
 
     @Transient
+    @JsonDeserialize(using = CustomAuthorityDeserializer.class)
     private Set<? extends GrantedAuthority> grantedAuthorities;
 
     @Transient
@@ -74,8 +80,9 @@ public class User implements UserDetails {
     private boolean isEnabled;
 
     @Override
+    @JsonDeserialize(using = CustomAuthorityDeserializer.class)
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.role.getGrantedAuthorities();
+        return role.getGrantedAuthorities();
     }
 
     @Override

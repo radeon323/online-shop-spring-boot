@@ -3,10 +3,13 @@ package com.olshevchenko.onlineshop.service;
 import com.olshevchenko.onlineshop.entity.User;
 import com.olshevchenko.onlineshop.exception.UserNotFoundException;
 import com.olshevchenko.onlineshop.repository.UserRepository;
+import com.olshevchenko.onlineshop.security.entity.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +22,9 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<User> findAll() {
         return repository.findAll();
@@ -34,7 +40,10 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserNotFoundException("Could not find user by email: " + email));
     }
 
-    public void save(User user) {
+    public void save(User user, Role role) {
+        String password = user.getPassword();
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(role);
         repository.save(user);
     }
 

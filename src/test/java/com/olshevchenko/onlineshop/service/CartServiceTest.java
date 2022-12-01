@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -59,8 +58,8 @@ class CartServiceTest {
 
     @Test
     void testAddToCart() {
-        when(productServiceMock.findById(1)).thenReturn(Optional.ofNullable(productSamsung));
-        when(productServiceMock.findById(2)).thenReturn(Optional.ofNullable(productXiaomi));
+        when(productServiceMock.findById(1)).thenReturn(productSamsung);
+        when(productServiceMock.findById(2)).thenReturn(productXiaomi);
 
         assertEquals(2, items.get(0).getQuantity());
         cartService.addToCart(items,1);
@@ -75,8 +74,8 @@ class CartServiceTest {
     void testAddToCartIfCartIsEmpty() {
         List<CartItem> items = new ArrayList<>();
 
-        when(productServiceMock.findById(1)).thenReturn(Optional.ofNullable(productSamsung));
-        when(productServiceMock.findById(2)).thenReturn(Optional.ofNullable(productXiaomi));
+        when(productServiceMock.findById(1)).thenReturn(productSamsung);
+        when(productServiceMock.findById(2)).thenReturn(productXiaomi);
 
         assertTrue(items.isEmpty());
         cartService.addToCart(items,1);

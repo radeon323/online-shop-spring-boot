@@ -2,6 +2,7 @@ package com.olshevchenko.onlineshop.service;
 
 import com.olshevchenko.onlineshop.entity.CartItem;
 import com.olshevchenko.onlineshop.entity.Product;
+import com.olshevchenko.onlineshop.exception.ProductNotFoundException;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
@@ -30,15 +31,17 @@ public class CartService {
         CartItem cartItem = cart.stream()
                 .filter(item -> item.getProduct().getId() == id)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new ProductNotFoundException("Could not find product by id: " + id));
         cart.remove(cartItem);
     }
 
     public void updateQuantity(List<CartItem> cart, int id, int quantity) {
+        Product product = productService.findById(id);
         cart.stream()
                 .filter(item -> item.getProduct().getId() == id)
                 .findFirst()
-                .ifPresent(item -> item.setQuantity(quantity));
+                .ifPresentOrElse(item -> item.setQuantity(quantity),
+                    () -> cart.add(new CartItem(product, quantity)));
     }
 
     public double calculateTotalPrice(List<CartItem> cart) {

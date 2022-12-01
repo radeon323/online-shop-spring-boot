@@ -4,6 +4,7 @@ import com.olshevchenko.onlineshop.entity.Product;
 import com.olshevchenko.onlineshop.exception.ProductNotFoundException;
 import com.olshevchenko.onlineshop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,10 +38,10 @@ public class ProductService {
     }
 
     public List<Product> sortByPrice() {
-        return repository.findAll();
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "price"));
     }
 
     public List<Product> sortByName() {
-        return repository.findAll();
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "name"));
     }
 }

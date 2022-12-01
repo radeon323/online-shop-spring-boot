@@ -11,9 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.concurrent.TimeUnit;
-
 import static com.olshevchenko.onlineshop.security.entity.UserPermission.*;
+import static com.olshevchenko.onlineshop.security.entity.UserPermission.USER_WRITE;
 
 /**
  * @author Oleksandr Shevchenko
@@ -23,50 +22,32 @@ import static com.olshevchenko.onlineshop.security.entity.UserPermission.*;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    public static final String LOGIN_URI = "/login";
-    public static final String LOGOUT_URI = "/logout";
-
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
     @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "index", "/css/*", "/js/*",
-                        "/register", "/register/", "/products", "/products/").permitAll()
+                .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
 
-                .antMatchers("/cart", "/cart/", "/cart/delete").hasAuthority(PRODUCT_READ.getPermission())
-                .antMatchers(HttpMethod.POST,"/cart/update").hasAuthority(PRODUCT_READ.getPermission())
+                .antMatchers(HttpMethod.GET,"/api/v1/products/**").hasAuthority(PRODUCT_READ.getPermission())
+                .antMatchers(HttpMethod.POST,"/api/v1/products/**").hasAuthority(PRODUCT_WRITE.getPermission())
+                .antMatchers(HttpMethod.PUT,"/api/v1/products/**").hasAuthority(PRODUCT_WRITE.getPermission())
+                .antMatchers(HttpMethod.DELETE,"/api/v1/products/**").hasAuthority(PRODUCT_DELETE.getPermission())
 
-                .antMatchers(HttpMethod.GET,"/products/add", "/products/add/", "/products/edit/*").hasAuthority(PRODUCT_WRITE.getPermission())
-                .antMatchers(HttpMethod.POST,"/products/add", "/products/add/", "/products/edit/*").hasAuthority(PRODUCT_WRITE.getPermission())
+                .antMatchers("/api/v1/cart/**").hasAuthority(PRODUCT_READ.getPermission())
 
-                //TODO: make ability to edin only own user
-                .antMatchers(HttpMethod.GET,"/users/edit/*").hasAuthority(USER_READ.getPermission())
-                .antMatchers(HttpMethod.POST,"/users/edit/*").hasAuthority(USER_WRITE.getPermission())
+                .antMatchers(HttpMethod.GET,"/api/v1/users/**").hasAuthority(USER_READ.getPermission())
+                .antMatchers(HttpMethod.POST,"/api/v1/users/**").hasAuthority(USER_WRITE.getPermission())
+                .antMatchers(HttpMethod.PUT,"/api/v1/users/**").hasAuthority(USER_WRITE.getPermission())
+                .antMatchers(HttpMethod.DELETE,"/api/v1/users/**").hasAuthority(USER_WRITE.getPermission())
 
                 .anyRequest()
                 .authenticated()
                 .and()
-                .formLogin()
-                    .loginPage(LOGIN_URI).permitAll()
-                    .defaultSuccessUrl("/products", true)
-                    .passwordParameter("password")
-                    .usernameParameter("email")
-                .and()
-                    .rememberMe()
-                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(10))
-                    .key("0212ce79-369e-477f-b633-c12446c51c75")
-                    .rememberMeParameter("remember-me")
-                .and()
-                    .logout()
-                    .logoutUrl(LOGOUT_URI).permitAll()
-                    .clearAuthentication(true)
-                    .invalidateHttpSession(true)
-                    .deleteCookies("SESSION", "remember-me")
-                    .logoutSuccessUrl(LOGIN_URI);
+                .httpBasic();
 
         http.authenticationProvider(daoAuthenticationProvider());
 
@@ -79,5 +60,4 @@ public class SecurityConfig {
         provider.setUserDetailsService(userService);
         return provider;
     }
-
 }

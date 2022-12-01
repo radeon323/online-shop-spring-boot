@@ -63,7 +63,7 @@ class UserServiceTest {
 
     @Test
     void testAdd() {
-        doNothing().when(userRepositoryMock).save(isA(User.class));
+        when(userRepositoryMock.save(expectedUser)).thenReturn(expectedUser);
         userRepositoryMock.save(expectedUser);
         verify(userRepositoryMock, times(1)).save(expectedUser);
     }
