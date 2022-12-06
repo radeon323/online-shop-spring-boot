@@ -82,9 +82,7 @@ class UsersRestControllerTest {
     void testFetchUsers() throws Exception {
         when(userService.findAll()).thenReturn(usersList);
         mockMvc.perform( MockMvcRequestBuilders
-                        .get("/api/v1/users/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
+                        .get("/api/v1/users/all")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -101,14 +99,21 @@ class UsersRestControllerTest {
         when(userService.findByEmail("darthvader@gmail.com")).thenReturn(darthVader);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/?email={email}", "darthvader@gmail.com")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].email").value("darthvader@gmail.com"))
-                .andExpect(jsonPath("$[0].role").value("USER"));
+                .andExpect(jsonPath("$.email").value("darthvader@gmail.com"))
+                .andExpect(jsonPath("$.role").value("USER"));
         verify(userService, times(1)).findByEmail("darthvader@gmail.com");
+    }
+
+    @Test
+    void testFetchUserByEmailForbiddenForUser() throws Exception {
+        mockMvc.perform( MockMvcRequestBuilders
+                        .get("/api/v1/users/?email={email}", "darthvader@gmail.com")
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("darthvader@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
+                        .with(user(darthVader))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -117,19 +122,15 @@ class UsersRestControllerTest {
         when(userService.findByEmail("hansolo@gmail.com")).thenThrow(UserNotFoundException.class);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/?email={email}", "hansolo@gmail.com")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
         verify(userService, times(1)).findByEmail("hansolo@gmail.com");
     }
 
     @Test
-    @WithUserDetails()
     void testFetchUsersIfForbiddenForUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
-                        .get("/api/v1/users/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("darthvader@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
+                        .get("/api/v1/users/all")
                         .with(user(darthVader))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
@@ -141,8 +142,6 @@ class UsersRestControllerTest {
         when(userService.findById(2)).thenReturn(lukeSkywalker);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/{id}", 2)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("lukeskywalker@gmail.com"))
@@ -151,13 +150,20 @@ class UsersRestControllerTest {
     }
 
     @Test
+    void testFetchUserByIdIfForbiddenForUser() throws Exception {
+        mockMvc.perform( MockMvcRequestBuilders
+                        .get("/api/v1/users/{id}", 2)
+                        .with(user(darthVader))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithUserDetails("admin")
     void testFetchUserByIdIfUserNotFound() throws Exception {
         when(userService.findById(3)).thenThrow(UserNotFoundException.class);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/{id}", 3)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
         verify(userService, times(1)).findById(3);
@@ -168,8 +174,6 @@ class UsersRestControllerTest {
     void testSaveUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/users/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lukeSkywalker)))
                 .andExpect(status().isOk())
@@ -183,19 +187,15 @@ class UsersRestControllerTest {
     void testSaveUserIfUserNull() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/users/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(null)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @WithUserDetails("admin")
     void testUpdateCurrentUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .put("/api/v1/users/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
                         .with(user(lukeSkywalker))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lukeSkywalker)))
@@ -206,12 +206,10 @@ class UsersRestControllerTest {
     }
 
     @Test
-    @WithUserDetails("admin")
     void testDeleteCurrentUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .delete("/api/v1/users/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("lukeskywalker@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(lukeSkywalker))
+                        .with(user(darthVader))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(userService).delete(any(Integer.class));

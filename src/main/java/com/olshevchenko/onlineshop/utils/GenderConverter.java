@@ -1,4 +1,4 @@
-package com.olshevchenko.onlineshop.entity.utils;
+package com.olshevchenko.onlineshop.utils;
 
 import com.olshevchenko.onlineshop.entity.Gender;
 

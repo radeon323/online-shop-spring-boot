@@ -1,18 +1,19 @@
 package com.olshevchenko.onlineshop.security;
 
+import com.olshevchenko.onlineshop.security.entity.Role;
 import com.olshevchenko.onlineshop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static com.olshevchenko.onlineshop.security.entity.UserPermission.*;
-import static com.olshevchenko.onlineshop.security.entity.UserPermission.USER_WRITE;
 
 /**
  * @author Oleksandr Shevchenko
@@ -20,6 +21,7 @@ import static com.olshevchenko.onlineshop.security.entity.UserPermission.USER_WR
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
@@ -38,11 +40,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.DELETE,"/api/v1/products/**").hasAuthority(PRODUCT_DELETE.getPermission())
 
                 .antMatchers("/api/v1/cart/**").hasAuthority(PRODUCT_READ.getPermission())
-
                 .antMatchers(HttpMethod.GET,"/api/v1/users/**").hasAuthority(USER_READ.getPermission())
-                .antMatchers(HttpMethod.POST,"/api/v1/users/**").hasAuthority(USER_WRITE.getPermission())
-                .antMatchers(HttpMethod.PUT,"/api/v1/users/**").hasAuthority(USER_WRITE.getPermission())
-                .antMatchers(HttpMethod.DELETE,"/api/v1/users/**").hasAuthority(USER_WRITE.getPermission())
 
                 .anyRequest()
                 .authenticated()

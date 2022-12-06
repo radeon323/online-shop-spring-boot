@@ -32,7 +32,7 @@ public class SpringSecurityWebAuxTestConfig {
                 .isEnabled(true)
                 .build();
         User user = User.builder()
-                .email("user")
+                .email("user1")
                 .password("password")
                 .role(USER)
                 .grantedAuthorities(USER.getGrantedAuthorities())

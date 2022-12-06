@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -75,7 +74,6 @@ class ProductsRestControllerTest {
         when(productService.findAll()).thenReturn(productsList);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/products/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -118,7 +116,6 @@ class ProductsRestControllerTest {
         when(productService.findAll()).thenReturn(productsList);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/products/?sort={}", "price")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -161,7 +158,6 @@ class ProductsRestControllerTest {
         when(productService.findAll()).thenReturn(productsList);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/products/?sort={}", "name")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -187,7 +183,6 @@ class ProductsRestControllerTest {
         when(productService.findById(1)).thenReturn(productSamsung);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/products/{id}",1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Samsung Galaxy M52"))
@@ -201,7 +196,6 @@ class ProductsRestControllerTest {
         when(productService.findById(1)).thenThrow(ProductNotFoundException.class);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/products/{id}",1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -218,7 +212,6 @@ class ProductsRestControllerTest {
                 .build();
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/products/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productSamsung)))
                 .andExpect(status().isOk())
@@ -233,7 +226,6 @@ class ProductsRestControllerTest {
         Product product = Product.builder().build();
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/products/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(product)))
                 .andExpect(status().isForbidden());
@@ -244,7 +236,6 @@ class ProductsRestControllerTest {
     void testSaveProductIfProductNull() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/products/")
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(null)))
                 .andExpect(status().isBadRequest());
@@ -263,7 +254,6 @@ class ProductsRestControllerTest {
 
         mockMvc.perform( MockMvcRequestBuilders
                         .put("/api/v1/products/{id}",1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productSamsung)))
                 .andExpect(status().isOk())
@@ -278,7 +268,6 @@ class ProductsRestControllerTest {
         Product product = Product.builder().build();
         mockMvc.perform( MockMvcRequestBuilders
                         .put("/api/v1/products/{id}",1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(product)))
                 .andExpect(status().isForbidden());
@@ -289,7 +278,6 @@ class ProductsRestControllerTest {
     void testUpdateProductIfProductNull() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .put("/api/v1/products/{id}",1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(null)))
                 .andExpect(status().isBadRequest());
@@ -308,7 +296,6 @@ class ProductsRestControllerTest {
 
         mockMvc.perform( MockMvcRequestBuilders
                         .delete("/api/v1/products/{id}",1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("admin", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productSamsung)))
                 .andExpect(status().isNoContent());
@@ -321,7 +308,6 @@ class ProductsRestControllerTest {
         Product product = Product.builder().build();
         mockMvc.perform( MockMvcRequestBuilders
                         .delete("/api/v1/products/{id}",1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(product)))
                 .andExpect(status().isForbidden());

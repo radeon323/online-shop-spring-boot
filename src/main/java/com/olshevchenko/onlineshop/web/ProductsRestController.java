@@ -1,7 +1,6 @@
 package com.olshevchenko.onlineshop.web;
 
 import com.olshevchenko.onlineshop.entity.Product;
-import com.olshevchenko.onlineshop.exception.ProductNotFoundException;
 import com.olshevchenko.onlineshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +18,12 @@ import java.util.Objects;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/products/")
+@RequestMapping(value = "/api/v1/products/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProductsRestController {
 
     private final ProductService productService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     protected List<Product> showAllProducts(@RequestParam(value = "sort", required = false) String sort) {
 
         List<Product> products;
@@ -39,19 +38,13 @@ public class ProductsRestController {
         return products;
     }
 
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") int id) {
-        Product product;
-        try {
-            product = productService.findById(id);
-        } catch (ProductNotFoundException e) {
-            log.error("Could not find product by id: {}", id);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        Product product = productService.findById(id);
+        return ResponseEntity.ok(product);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         if (product == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -60,7 +53,7 @@ public class ProductsRestController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @PutMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping("{id}")
     protected ResponseEntity<Product> editProduct(@PathVariable("id") int id, @RequestBody Product product) {
         if (product == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -70,7 +63,7 @@ public class ProductsRestController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping("{id}")
     protected ResponseEntity<Product> deleteProduct(@PathVariable int id) {
         productService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

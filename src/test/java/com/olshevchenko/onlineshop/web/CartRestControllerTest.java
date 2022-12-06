@@ -13,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -84,7 +83,6 @@ class CartRestControllerTest {
                         .get("/api/v1/cart/")
                         .session(session)
                         .sessionAttr("cartItems", cartItems)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -128,7 +126,6 @@ class CartRestControllerTest {
         cartService.addToCart(cartItems,1);
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/cart/{id}", 1)
-                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("user", "password"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].product").value(productSamsung))
