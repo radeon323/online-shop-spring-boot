@@ -40,7 +40,7 @@ public class CartService {
         cart.stream()
                 .filter(item -> item.getProduct().getId() == id)
                 .findFirst()
-                .ifPresentOrElse(item -> item.setQuantity(quantity),
+                .ifPresentOrElse(item -> item.setQuantity(quantity+item.getQuantity()),
                     () -> cart.add(new CartItem(product, quantity)));
     }
 

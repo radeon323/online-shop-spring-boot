@@ -27,17 +27,15 @@ public class CartRestController {
 
     @GetMapping()
     protected List<CartItem> getCart(HttpSession session,
-                                     @SessionAttribute(name = "cartItems", required = false) List<CartItem> cartItems) {
+                                     @SessionAttribute(required = false) List<CartItem> cartItems) {
         session.setAttribute("cartItems", cartItems);
         return cartItems;
     }
 
     @PostMapping("{id}")
-    protected ResponseEntity<List<CartItem>> addProductToCart(@SessionAttribute(name = "cartItems", required = false) List<CartItem> cartItems, HttpSession session,
-                                                              @PathVariable("id") int id, @RequestParam(value = "quantity", required = false) Integer quantity) {
-        if (cartItems == null) {
-            cartItems = Collections.synchronizedList(new ArrayList<>());
-        }
+    protected ResponseEntity<List<CartItem>> addProductToCart(@SessionAttribute(required = false) List<CartItem> cartItems, HttpSession session,
+                                                              @PathVariable("id") int id, @RequestParam(required = false) Integer quantity) {
+        cartItems = getItemList(cartItems);
         if (quantity != null && quantity != 0) {
             cartService.updateQuantity(cartItems,id,quantity);
         } else {
@@ -48,11 +46,9 @@ public class CartRestController {
     }
 
     @PutMapping("{id}")
-    protected ResponseEntity<List<CartItem>> updateCart(@SessionAttribute(name = "cartItems", required = false) List<CartItem> cartItems, HttpSession session,
-                                                        @PathVariable("id") int id, @RequestParam(value = "quantity", required = false) Integer quantity) {
-        if (cartItems == null) {
-            cartItems = Collections.synchronizedList(new ArrayList<>());
-        }
+    protected ResponseEntity<List<CartItem>> updateCart(@SessionAttribute(required = false) List<CartItem> cartItems, HttpSession session,
+                                                        @PathVariable("id") int id, @RequestParam(required = false) Integer quantity) {
+        cartItems = getItemList(cartItems);
         if (quantity != null && quantity != 0) {
             cartService.updateQuantity(cartItems,id,quantity);
         } else {
@@ -62,13 +58,21 @@ public class CartRestController {
         return ResponseEntity.ok(cartItems);
     }
 
+
     @DeleteMapping("{id}")
     protected ResponseEntity<List<CartItem>> removeProductFromCart(@PathVariable("id") int id, HttpSession session,
-                                                                   @SessionAttribute(name = "cartItems", required = false) List<CartItem> cartItems) {
+                                                                   @SessionAttribute(required = false) List<CartItem> cartItems) {
+        cartItems = getItemList(cartItems);
         cartService.removeFromCart(cartItems,id);
         session.setAttribute("cartItems", cartItems);
         return ResponseEntity.ok(cartItems);
     }
 
+    private List<CartItem> getItemList(List<CartItem> cartItems) {
+        if (cartItems == null) {
+            cartItems = Collections.synchronizedList(new ArrayList<>());
+        }
+        return cartItems;
+    }
 
 }
