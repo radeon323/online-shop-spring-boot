@@ -3,7 +3,10 @@ package com.olshevchenko.onlineshop.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.olshevchenko.onlineshop.security.CustomAuthorityDeserializer;
 import com.olshevchenko.onlineshop.security.entity.Role;
+import com.olshevchenko.onlineshop.utils.PGSQLEnumType;
 import lombok.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,6 +25,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@TypeDef(name = "pgsql_enum", typeClass = PGSQLEnumType.class)
 @Table( name = "users" )
 public class User implements UserDetails {
 
@@ -33,11 +37,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
-    //TODO: solve org.postgresql.util.PSQLException:
-    // ERROR: column "gender" is of type gender but expression is of type character varying
-//    @Convert(converter = GenderConverter.class)
-//    @Type(type = "com.olshevchenko.onlineshop.entity.Gender")
-    @Column(columnDefinition = "gender")
+    @Type(type = "pgsql_enum")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -50,8 +50,7 @@ public class User implements UserDetails {
     private String about;
     private int age;
 
-    //TODO: solve org.postgresql.util.PSQLException:
-    // ERROR: column "role" is of type gender but expression is of type character varying
+    @Type(type = "pgsql_enum")
     @Enumerated(EnumType.STRING)
     private Role role;
 
