@@ -22,7 +22,7 @@ public class Product implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_id_gen")
-    @SequenceGenerator(name = "products_id_gen", sequenceName = "products_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "products_id_gen", sequenceName = "products_id_seq")
     private int id;
 
     private String name;

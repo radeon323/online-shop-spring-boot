@@ -74,4 +74,11 @@ public class UsersRestController {
         return ResponseEntity.ok(users);
     }
 
+    @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Integer> deleteUserById(@PathVariable("id") int id) {
+        userService.delete(id);
+        return ResponseEntity.ok(id);
+    }
+
 }

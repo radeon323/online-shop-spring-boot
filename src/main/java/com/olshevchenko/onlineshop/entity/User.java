@@ -31,7 +31,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_id_gen")
-    @SequenceGenerator(name = "users_id_gen", sequenceName = "users_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "users_id_gen", sequenceName = "users_id_seq")
     private int id;
 
     private String email;

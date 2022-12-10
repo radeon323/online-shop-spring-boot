@@ -1,6 +1,7 @@
 package com.olshevchenko.onlineshop.service;
 
 import com.olshevchenko.onlineshop.entity.User;
+import com.olshevchenko.onlineshop.exception.UserAlreadyExistException;
 import com.olshevchenko.onlineshop.exception.UserNotFoundException;
 import com.olshevchenko.onlineshop.repository.UserRepository;
 import com.olshevchenko.onlineshop.security.entity.Role;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Oleksandr Shevchenko
@@ -41,10 +43,18 @@ public class UserService implements UserDetailsService {
     }
 
     public void save(User user, Role role) {
-        String password = user.getPassword();
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRole(role);
-        repository.save(user);
+        try {
+            String email = user.getEmail();
+            String emailInDb = findByEmail(email).getEmail();
+            if (Objects.equals(email, emailInDb)) {
+                throw new UserAlreadyExistException("User with email: " + email + " already exists!");
+            }
+        } catch (UserNotFoundException e) {
+            String password = user.getPassword();
+            user.setPassword(passwordEncoder.encode(password));
+            user.setRole(role);
+            repository.save(user);
+        }
     }
 
     public void delete(int id) {
