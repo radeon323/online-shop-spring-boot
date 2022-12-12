@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,7 +46,7 @@ public class ProductsRestController {
     }
 
     @PostMapping()
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
         if (product == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -54,7 +55,7 @@ public class ProductsRestController {
     }
 
     @PutMapping("{id}")
-    protected ResponseEntity<Product> editProduct(@PathVariable("id") int id, @RequestBody Product product) {
+    protected ResponseEntity<Product> editProduct(@PathVariable("id") int id, @Valid @RequestBody Product product) {
         if (product == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

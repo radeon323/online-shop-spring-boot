@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Set;
 
@@ -34,7 +35,10 @@ public class User implements UserDetails {
     @SequenceGenerator(name = "users_id_gen", sequenceName = "users_id_seq")
     private int id;
 
+    @NotEmpty(message = "The email is required.")
     private String email;
+
+    @NotEmpty(message = "The password is required.")
     private String password;
 
     @Type(type = "pgsql_enum")

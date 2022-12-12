@@ -125,7 +125,6 @@ class CartRestControllerTest {
                                            new CartItem(productApple, 1));
 
         cartService.addToCart(cartItems,1);
-        when(session.getAttribute("cartItems")).thenReturn(cartItems);
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/cart/{id}", 1)
                         .session(session)

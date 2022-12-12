@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -39,9 +40,8 @@ public class UsersRestController {
         return ResponseEntity.ok(user);
     }
 
-    //TODO: validation??
     @PostMapping()
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
+    public ResponseEntity<User> saveUser(@Valid @RequestBody User user) {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -49,10 +49,9 @@ public class UsersRestController {
         return ResponseEntity.ok(user);
     }
 
-    //TODO: validation??
     @PutMapping()
     @PreAuthorize("hasAuthority('users:write')")
-    public ResponseEntity<User> updateCurrentUser(@AuthenticationPrincipal User currentUser, @RequestBody User user) {
+    public ResponseEntity<User> updateCurrentUser(@AuthenticationPrincipal User currentUser, @Valid @RequestBody User user) {
         user.setId(currentUser.getId());
         Role role = currentUser.getRole();
         userService.save(currentUser, role);
