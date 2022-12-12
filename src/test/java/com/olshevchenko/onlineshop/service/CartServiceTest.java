@@ -102,11 +102,11 @@ class CartServiceTest {
     void testUpdateQuantity() {
         assertEquals(2, items.get(0).getQuantity());
         cartService.updateQuantity(items,1,10);
-        assertEquals(10, items.get(0).getQuantity());
+        assertEquals(12, items.get(0).getQuantity());
 
         assertEquals(3, items.get(1).getQuantity());
         cartService.updateQuantity(items,2,8);
-        assertEquals(8, items.get(1).getQuantity());
+        assertEquals(11, items.get(1).getQuantity());
     }
 
     @Test

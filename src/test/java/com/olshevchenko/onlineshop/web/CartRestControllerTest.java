@@ -6,6 +6,7 @@ import com.olshevchenko.onlineshop.entity.Product;
 import com.olshevchenko.onlineshop.service.CartService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,10 +46,13 @@ class CartRestControllerTest {
     @MockBean
     private CartService cartService;
 
+    @Mock
+    private MockHttpSession session;
+
 
     //TODO: how to inject session in test?
     @Test
-    @WithUserDetails()
+    @WithUserDetails("admin")
     void testFetchListOfCartItems() throws Exception {
         Product productSamsung = Product.builder()
                 .id(1)
@@ -75,10 +80,6 @@ class CartRestControllerTest {
                                            new CartItem(productXiaomi, 1),
                                            new CartItem(productApple, 1));
 
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute( "cartItems", cartItems);
-
-//        when(session.getAttribute("cartItems")).thenReturn(cartItems);
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/cart/")
                         .session(session)
@@ -95,7 +96,7 @@ class CartRestControllerTest {
     }
 
     @Test
-    @WithUserDetails()
+    @WithUserDetails("admin")
     void testAddToCart() throws Exception {
         Product productSamsung = Product.builder()
                 .id(1)
@@ -124,8 +125,11 @@ class CartRestControllerTest {
                                            new CartItem(productApple, 1));
 
         cartService.addToCart(cartItems,1);
+        when(session.getAttribute("cartItems")).thenReturn(cartItems);
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/cart/{id}", 1)
+                        .session(session)
+                        .sessionAttr("cartItems", cartItems)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].product").value(productSamsung))

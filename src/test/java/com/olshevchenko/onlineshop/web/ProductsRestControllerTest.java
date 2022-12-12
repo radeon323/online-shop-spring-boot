@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -221,7 +222,7 @@ class ProductsRestControllerTest {
     }
 
     @Test
-    @WithUserDetails()
+    @WithMockUser(roles = "USER")
     void testSaveProductForbiddenForUsers() throws Exception {
         Product product = Product.builder().build();
         mockMvc.perform( MockMvcRequestBuilders
@@ -263,7 +264,7 @@ class ProductsRestControllerTest {
     }
 
     @Test
-    @WithUserDetails()
+    @WithMockUser(roles = "USER")
     void testUpdateProductForbiddenForUsers() throws Exception {
         Product product = Product.builder().build();
         mockMvc.perform( MockMvcRequestBuilders
@@ -303,7 +304,7 @@ class ProductsRestControllerTest {
     }
 
     @Test
-    @WithUserDetails()
+    @WithMockUser(roles = "USER")
     void testDeleteProductForbiddenForUsers() throws Exception {
         Product product = Product.builder().build();
         mockMvc.perform( MockMvcRequestBuilders
