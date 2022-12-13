@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class User implements UserDetails {
     private int id;
 
     @NotEmpty(message = "The email is required.")
+    @Email(message = "Enter a valid email")
     private String email;
 
     @NotEmpty(message = "The password is required.")
