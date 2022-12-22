@@ -1,6 +1,6 @@
 package com.olshevchenko.onlineshop.web;
 
-import com.olshevchenko.onlineshop.entity.User;
+import com.olshevchenko.onlineshop.security.entity.ApiUser;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -21,7 +21,7 @@ public class SpringSecurityWebAuxTestConfig {
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
-        User admin = User.builder()
+        ApiUser admin = ApiUser.builder()
                 .email("admin")
                 .password("password")
                 .role(ADMIN)
@@ -31,8 +31,8 @@ public class SpringSecurityWebAuxTestConfig {
                 .isCredentialsNonExpired(true)
                 .isEnabled(true)
                 .build();
-        User user = User.builder()
-                .email("user1")
+        ApiUser user = ApiUser.builder()
+                .email("username")
                 .password("password")
                 .role(USER)
                 .grantedAuthorities(USER.getGrantedAuthorities())

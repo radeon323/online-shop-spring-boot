@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = SpringSecurityWebAuxTestConfig.class
 )
 @AutoConfigureMockMvc
-class ProductsRestControllerTest {
+class ProductsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -198,7 +198,7 @@ class ProductsRestControllerTest {
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/products/{id}",1)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -299,7 +299,7 @@ class ProductsRestControllerTest {
                         .delete("/api/v1/products/{id}",1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productSamsung)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
         verify(productService, times(1)).delete(1);
     }
 

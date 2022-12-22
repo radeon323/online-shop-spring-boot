@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository repository;
 
@@ -61,9 +61,4 @@ public class UserService implements UserDetailsService {
         repository.deleteById(id);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return repository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found", email)));
-    }
 }

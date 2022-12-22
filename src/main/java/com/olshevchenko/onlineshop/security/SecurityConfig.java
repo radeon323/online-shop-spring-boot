@@ -3,6 +3,7 @@ package com.olshevchenko.onlineshop.security;
 import com.olshevchenko.onlineshop.jwt.JwtConfig;
 import com.olshevchenko.onlineshop.jwt.JwtTokenVerifier;
 import com.olshevchenko.onlineshop.jwt.JwtUsernameAndPasswordAuthenticationFilter;
+import com.olshevchenko.onlineshop.service.ApiUserService;
 import com.olshevchenko.onlineshop.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,7 @@ import static com.olshevchenko.onlineshop.security.entity.UserPermission.*;
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
+    private final ApiUserService userService;
     private final JwtConfig jwtConfig;
     private final SecretKey secretKey;
 

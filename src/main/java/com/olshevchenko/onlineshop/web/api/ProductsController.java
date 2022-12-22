@@ -1,10 +1,10 @@
-package com.olshevchenko.onlineshop.web;
+package com.olshevchenko.onlineshop.web.api;
 
+import com.olshevchenko.onlineshop.dto.ProductDto;
 import com.olshevchenko.onlineshop.entity.Product;
 import com.olshevchenko.onlineshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/v1/products/", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ProductsRestController {
+public class ProductsController {
 
     private final ProductService productService;
 
@@ -40,35 +40,51 @@ public class ProductsRestController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") int id) {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") int id) {
         Product product = productService.findById(id);
-        return ResponseEntity.ok(product);
+        ProductDto productDto = entityToDto(product);
+        return ResponseEntity.ok(productDto);
     }
 
     @PostMapping()
-    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
-        if (product == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody ProductDto productDto) {
+        Product product = dtoToEntity(productDto);
         productService.save(product);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        return ResponseEntity.ok(productDto);
     }
 
     @PutMapping("{id}")
-    protected ResponseEntity<Product> editProduct(@PathVariable("id") int id, @Valid @RequestBody Product product) {
-        if (product == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    protected ResponseEntity<ProductDto> editProduct(@PathVariable("id") int id, @Valid @RequestBody ProductDto productDto) {
+        Product product = dtoToEntity(productDto);
         product.setId(id);
         productService.save(product);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        return ResponseEntity.ok(productDto);
     }
 
     @DeleteMapping("{id}")
-    protected ResponseEntity<Product> deleteProduct(@PathVariable int id) {
+    protected void deleteProduct(@PathVariable int id) {
         productService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
+    private Product dtoToEntity(ProductDto productDto) {
+        return Product.builder()
+                .name(productDto.getName())
+                .description(productDto.getDescription())
+                .price(productDto.getPrice())
+                .build();
+    }
+
+    private ProductDto entityToDto(Product product) {
+        return ProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .creationDate(product.getCreationDate())
+                .build();
+    }
+
 
 
 }

@@ -7,13 +7,13 @@ import com.olshevchenko.onlineshop.exception.UserNotFoundException;
 import com.olshevchenko.onlineshop.security.entity.Role;
 import com.olshevchenko.onlineshop.service.UserService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -36,8 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = SpringSecurityWebAuxTestConfig.class
 )
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class UsersRestControllerTest {
+class UsersControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,7 +57,6 @@ class UsersRestControllerTest {
                                         .about("I'm your father")
                                         .age(41)
                                         .role(USER)
-                                        .grantedAuthorities(USER.getGrantedAuthorities())
                                         .build();
 
     private final User lukeSkywalker = User.builder()
@@ -71,11 +69,9 @@ class UsersRestControllerTest {
                                         .about("May the force be with you!!!")
                                         .age(19)
                                         .role(ADMIN)
-                                        .grantedAuthorities(ADMIN.getGrantedAuthorities())
                                         .build();
 
     private final List<User> usersList = List.of(darthVader, lukeSkywalker);
-
 
     @Test
     @WithUserDetails("admin")
@@ -111,7 +107,7 @@ class UsersRestControllerTest {
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/?email={email}", "darthvader@gmail.com")
                         .with(SecurityMockMvcRequestPostProcessors.httpBasic("darthvader@gmail.com", "$2a$10$hHINZ1WVjQltKiMiFYyp9OsxnblocMA7yBoCXEn6yarNG.53RR9DK"))
-                        .with(user(darthVader))
+                        .with(user("user"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -123,7 +119,7 @@ class UsersRestControllerTest {
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/?email={email}", "hansolo@gmail.com")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
         verify(userService, times(1)).findByEmail("hansolo@gmail.com");
     }
 
@@ -131,7 +127,7 @@ class UsersRestControllerTest {
     void testFetchUsersIfForbiddenForUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/all")
-                        .with(user(darthVader))
+                        .with(user("user"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -153,7 +149,7 @@ class UsersRestControllerTest {
     void testFetchUserByIdIfForbiddenForUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/{id}", 2)
-                        .with(user(darthVader))
+                        .with(user("user"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -165,7 +161,7 @@ class UsersRestControllerTest {
         mockMvc.perform( MockMvcRequestBuilders
                         .get("/api/v1/users/{id}", 3)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
         verify(userService, times(1)).findById(3);
     }
 
@@ -193,10 +189,10 @@ class UsersRestControllerTest {
     }
 
     @Test
+    @WithMockUser("admin")
     void testUpdateCurrentUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .put("/api/v1/users/")
-                        .with(user(lukeSkywalker))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(lukeSkywalker)))
                 .andExpect(status().isOk())
@@ -205,11 +201,12 @@ class UsersRestControllerTest {
         verify(userService).save(any(User.class), any(Role.class));
     }
 
+    //TODO: not injecting principal to mockmvc, 403 forbidden
     @Test
+    @WithMockUser("username")
     void testDeleteCurrentUser() throws Exception {
         mockMvc.perform( MockMvcRequestBuilders
                         .delete("/api/v1/users/")
-                        .with(user(darthVader))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(userService).delete(any(Integer.class));

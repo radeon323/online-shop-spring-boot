@@ -62,12 +62,12 @@ class CartServiceTest {
         when(productServiceMock.findById(2)).thenReturn(productXiaomi);
 
         assertEquals(2, items.get(0).getQuantity());
-        cartService.addToCart(items,1);
-        assertEquals(3, items.get(0).getQuantity());
+        cartService.addToCart(items, itemSamsung);
+        assertEquals(4, items.get(0).getQuantity());
 
         assertEquals(3, items.get(1).getQuantity());
-        cartService.addToCart(items,2);
-        assertEquals(4, items.get(1).getQuantity());
+        cartService.addToCart(items, itemXiaomi);
+        assertEquals(6, items.get(1).getQuantity());
     }
 
     @Test
@@ -78,40 +78,35 @@ class CartServiceTest {
         when(productServiceMock.findById(2)).thenReturn(productXiaomi);
 
         assertTrue(items.isEmpty());
-        cartService.addToCart(items,1);
-        assertEquals(1, items.get(0).getQuantity());
+        cartService.addToCart(items,itemSamsung);
+        assertEquals(2, items.get(0).getQuantity());
         assertEquals(productSamsung, items.get(0).getProduct());
 
-        cartService.addToCart(items,2);
-        assertEquals(1, items.get(1).getQuantity());
+        cartService.addToCart(items,itemXiaomi);
+        assertEquals(3, items.get(1).getQuantity());
         assertEquals(productXiaomi, items.get(1).getProduct());
     }
 
     @Test
     void testRemoveFromCart() {
         assertTrue(items.contains(itemSamsung));
-        cartService.removeFromCart(items,1);
+        cartService.removeFromCart(items,itemSamsung);
         assertFalse(items.contains(itemSamsung));
 
         assertTrue(items.contains(itemXiaomi));
-        cartService.removeFromCart(items,2);
+        cartService.removeFromCart(items,itemXiaomi);
         assertFalse(items.contains(itemXiaomi));
     }
 
     @Test
     void testUpdateQuantity() {
         assertEquals(2, items.get(0).getQuantity());
-        cartService.updateQuantity(items,1,10);
-        assertEquals(12, items.get(0).getQuantity());
+        cartService.updateQuantity(items,new CartItem(productSamsung, 10));
+        assertEquals(10, items.get(0).getQuantity());
 
         assertEquals(3, items.get(1).getQuantity());
-        cartService.updateQuantity(items,2,8);
-        assertEquals(11, items.get(1).getQuantity());
+        cartService.updateQuantity(items,new CartItem(productXiaomi, 10));
+        assertEquals(10, items.get(1).getQuantity());
     }
 
-    @Test
-    void testCalculateTotalPrice() {
-        double total = cartService.calculateTotalPrice(items);
-        assertEquals(62095.0, total);
-    }
 }

@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = SpringSecurityWebAuxTestConfig.class
 )
 @AutoConfigureMockMvc
-class CartRestControllerTest {
+class CartControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -124,7 +124,7 @@ class CartRestControllerTest {
                                            new CartItem(productXiaomi, 1),
                                            new CartItem(productApple, 1));
 
-        cartService.addToCart(cartItems,1);
+        cartService.addToCart(cartItems, new CartItem(productSamsung, 1));
         mockMvc.perform( MockMvcRequestBuilders
                         .post("/api/v1/cart/{id}", 1)
                         .session(session)
