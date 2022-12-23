@@ -3,24 +3,17 @@ package com.olshevchenko.onlineshop.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * @author Oleksandr Shevchenko
  */
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Table( name = "products" )
 public class Product implements Serializable {
 

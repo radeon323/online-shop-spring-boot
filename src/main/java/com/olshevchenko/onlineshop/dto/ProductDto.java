@@ -10,13 +10,10 @@ import java.time.LocalDateTime;
 /**
  * @author Oleksandr Shevchenko
  */
-@Getter
-@Setter
-@ToString
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class ProductDto {
 
     private int id;

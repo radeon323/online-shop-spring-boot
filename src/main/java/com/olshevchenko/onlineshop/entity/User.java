@@ -7,20 +7,15 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 
 /**
  * @author Oleksandr Shevchenko
  */
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @TypeDef(name = "pgsql_enum", typeClass = PGSQLEnumType.class)
 @Table( name = "users" )
 public class User {

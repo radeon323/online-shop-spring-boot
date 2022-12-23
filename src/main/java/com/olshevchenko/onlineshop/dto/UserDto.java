@@ -10,13 +10,10 @@ import javax.validation.constraints.NotEmpty;
 /**
  * @author Oleksandr Shevchenko
  */
-@Getter
-@Setter
-@ToString
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class UserDto {
     private int id;
 
