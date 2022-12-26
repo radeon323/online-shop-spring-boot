@@ -1,4 +1,4 @@
-package com.olshevchenko.onlineshop.jwt;
+package com.olshevchenko.onlineshop.security.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UsernameAndPasswordAuthenticationRequest {
-    private String username;
+public class AuthenticationRequest {
+    private String email;
     private String password;
 }

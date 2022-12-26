@@ -1,11 +1,13 @@
-package com.olshevchenko.onlineshop.jwt;
+package com.olshevchenko.onlineshop.security.jwt;
 
+import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
+
+import javax.crypto.SecretKey;
 
 /**
  * @author Oleksandr Shevchenko
@@ -18,9 +20,9 @@ import org.springframework.http.HttpHeaders;
 public class JwtConfig {
     private String secretKey;
     private String tokenPrefix;
-    private Integer tokenExpirationAfterDays;
+    private Integer tokenExpirationAfterHours;
 
-    public String getAuthorizationHeader() {
-        return HttpHeaders.AUTHORIZATION;
+    public SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 }
